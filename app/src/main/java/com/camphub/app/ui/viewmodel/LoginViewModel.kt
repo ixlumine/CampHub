@@ -38,4 +38,9 @@ class LoginViewModel : ViewModel() {
             }
         }
     }
+
+    // Called by the View after the Snackbar is shown
+    fun clearError() {
+        _errorMessage.value = null
+    }
 }
