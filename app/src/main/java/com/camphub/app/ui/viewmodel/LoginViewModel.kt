@@ -6,6 +6,7 @@ import com.camphub.app.data.container.CampHubServerContainer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
 
 class LoginViewModel : ViewModel() {
@@ -31,6 +32,9 @@ class LoginViewModel : ViewModel() {
                 _loginSuccess.value = true
             } catch (e: CancellationException) {
                 throw e
+            } catch (e: IOException) {
+                // Network failure: backend off, timeout, no connection
+                _errorMessage.value = "Tidak dapat terhubung ke server"
             } catch (e: Exception) {
                 _errorMessage.value = e.message ?: "Terjadi kesalahan"
             } finally {

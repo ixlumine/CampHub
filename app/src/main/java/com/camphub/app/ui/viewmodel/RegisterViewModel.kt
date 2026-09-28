@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
+import java.io.IOException
 
 class RegisterViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
@@ -44,6 +45,9 @@ class RegisterViewModel : ViewModel() {
                 } else {
                     _errorMessage.value = e.message ?: "Terjadi kesalahan"
                 }
+            } catch (e: IOException) {
+                // Network failure: backend off, timeout, no connection
+                _errorMessage.value = "Tidak dapat terhubung ke server"
             } catch (e: Exception) {
                 _errorMessage.value = e.message ?: "Terjadi kesalahan"
             } finally {
