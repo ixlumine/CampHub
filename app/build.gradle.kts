@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.camphub.app"
         minSdk = 28
-        targetSdk = 37
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
