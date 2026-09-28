@@ -1,6 +1,8 @@
 package com.camphub.app.data.container
 
 import com.camphub.app.data.interceptor.AuthInterceptor
+import com.camphub.app.data.repository.AuthServerRepositories
+import com.camphub.app.data.service.AuthServerService
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -26,4 +28,13 @@ class CampHubServerContainer {
         .build()
 
     // Each feature adds its service and repository below (spec 6.2, rule 3)
+
+    // Foundation: auth
+    private val authService: AuthServerService by lazy {
+        retrofit.create(AuthServerService::class.java)
+    }
+
+    val authServerRepository: AuthServerRepositories by lazy {
+        AuthServerRepositories(authService)
+    }
 }
