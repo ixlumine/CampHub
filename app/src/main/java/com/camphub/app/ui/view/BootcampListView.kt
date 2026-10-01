@@ -1,6 +1,7 @@
 package com.camphub.app.ui.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import com.camphub.app.ui.viewmodel.BootcampListViewModel
 fun BootcampListView(
     onTabSelected: (AppView) -> Unit,
     onLogout: () -> Unit,
+    onBootcampClick: (Long) -> Unit,
     viewModel: BootcampListViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -72,7 +74,10 @@ fun BootcampListView(
             } else {
                 LazyColumn(modifier = contentModifier) {
                     itemsIndexed(state.data) { index, bootcamp ->
-                        BootcampListItem(bootcamp = bootcamp)
+                        BootcampListItem(
+                            bootcamp = bootcamp,
+                            modifier = Modifier.clickable { onBootcampClick(bootcamp.id) }
+                        )
                         // Divider between items, aligned with the text
                         if (index < state.data.lastIndex) {
                             HorizontalDivider(modifier = Modifier.padding(start = 72.dp))

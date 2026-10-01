@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.camphub.app.data.container.CampHubServerContainer
+import com.camphub.app.ui.view.BootcampDetailView
 import com.camphub.app.ui.view.BootcampListView
 import com.camphub.app.ui.view.ForumListView
 import com.camphub.app.ui.view.LoginView
@@ -17,7 +18,8 @@ enum class AppView {
     Register,
     Ranking,
     Catalog,
-    Forum
+    Forum,
+    BootcampDetail
 }
 
 @Composable
@@ -71,10 +73,20 @@ fun AppRouting() {
             RankingView(onTabSelected = openTab, onLogout = logout)
         }
         composable(AppView.Catalog.name) {
-            BootcampListView(onTabSelected = openTab, onLogout = logout)
+            BootcampListView(
+                onTabSelected = openTab,
+                onLogout = logout,
+                onBootcampClick = { id -> navController.navigate("${AppView.BootcampDetail.name}/$id") }
+            )
         }
         composable(AppView.Forum.name) {
             ForumListView(onTabSelected = openTab, onLogout = logout)
+        }
+
+        // Catalog
+        composable("${AppView.BootcampDetail.name}/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")!!.toLong()
+            BootcampDetailView(bootcampId = id, onBack = { navController.popBackStack() })
         }
     }
 }
