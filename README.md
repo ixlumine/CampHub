@@ -1,0 +1,33 @@
+# CampHub
+
+Aplikasi Android untuk mencari dan membandingkan bootcamp. Tugas ALP Visual Programming, Universitas Ciputra.
+Backend ada di repository `CampHubAPI`.
+
+## Cara menjalankan
+
+1. Jalankan backend `CampHubAPI` (lihat README-nya).
+2. Buka project ini di Android Studio, tunggu Gradle sync selesai.
+3. Pilih emulator, klik **Run**.
+
+### HP lewat kabel USB
+
+1. Jalankan `adb reverse tcp:8080 tcp:8080`.
+2. Ubah `BASE_URL` di `CampHubServerContainer.kt` menjadi `http://127.0.0.1:8080/`.
+3. Klik **Run**.
+
+## Akun contoh
+
+| Role | Email | Password |
+|---|---|---|
+| ADMIN | admin@example.com | `admin_dev_password` |
+| PROVIDER | kodenusantara@example.com | password123 |
+| PROVIDER | rintis@example.com | password123 |
+| USER | rina@example.com | password123 |
+| USER | bima@example.com | password123 |
+| USER | sekar@example.com | password123 |
+
+## Jika gagal terhubung
+
+- Pastikan backend sudah berjalan.
+- Buka `http://10.0.2.2:8080/api/auth/login` di Chrome emulator. Jika muncul teks "Method tidak didukung", backend bisa dijangkau.
+- Pastikan `targetSdk = 36` di `app/build.gradle.kts`. Dengan nilai 37, Android 17 memblokir koneksi aplikasi ke backend di laptop.
