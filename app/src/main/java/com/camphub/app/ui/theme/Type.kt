@@ -20,7 +20,7 @@ val SourceSans3 = FontFamily(
     Font(R.font.source_sans_3_semibold, FontWeight.SemiBold)
 )
 
-// Material 3 defaults; only font, weight, size, and line height are changed (spec 6.6)
+// Material 3 defaults; only font, weight, size, and line height are changed
 private val base = Typography()
 
 val Typography = Typography(

@@ -2,7 +2,7 @@ package com.camphub.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Palette from mockup pages A and B (spec 6.6)
+// App color palette
 val Primary = Color(0xFF274A94)
 val OnPrimary = Color(0xFFFFFFFF)
 val PrimaryContainer = Color(0xFFD9E2FF)

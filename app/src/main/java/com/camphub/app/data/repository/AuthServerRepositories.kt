@@ -13,7 +13,7 @@ class AuthServerRepositories(private val service: AuthServerService) {
     suspend fun login(email: String, password: String): ResponseAuth {
         val response = service.login(RequestLogin(email = email, password = password))
         if (!response.isSuccessful) {
-            // Server message from ResponseError (6.2, rule 6)
+            // Read the error message sent by the server
             val error = Gson().fromJson(response.errorBody()?.charStream(), ResponseError::class.java)
             throw error.toApiException("Login gagal (${response.code()})")
         }

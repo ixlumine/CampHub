@@ -144,7 +144,7 @@ fun RegisterView(
                 label = { Text(text = "Password") },
                 singleLine = true,
                 isError = passwordError != null,
-                // Helper text from the mockup; replaced by the server message on error
+                // Helper text; replaced by the server message on error
                 supportingText = { Text(text = passwordError ?: "8–72 karakter") },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

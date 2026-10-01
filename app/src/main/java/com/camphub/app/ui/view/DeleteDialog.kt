@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.camphub.app.ui.theme.CampHubTheme
 
-// Every delete asks first: "Batal" + "Hapus" in error color (mockup D "Hapus")
-// Server rejections (still has programs/threads/reviews) are shown in a Snackbar by the screen
+// Delete confirmation
+// If the server refuses the delete, the screen shows its message in a Snackbar
 @Composable
 fun DeleteDialog(
     title: String,

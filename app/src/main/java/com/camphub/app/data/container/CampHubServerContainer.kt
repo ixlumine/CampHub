@@ -28,9 +28,9 @@ class CampHubServerContainer {
         .client(client)
         .build()
 
-    // Each feature adds its service and repository below (spec 6.2, rule 3)
+    // Add each feature's service and repository below
 
-    // Foundation: auth
+    // Auth
     private val authService: AuthServerService by lazy {
         retrofit.create(AuthServerService::class.java)
     }

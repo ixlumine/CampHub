@@ -4,7 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-// Light theme only; dynamic color removed so Android 12+ keeps the mockup palette
+// Light theme only; dynamic color is off so colors stay the same on Android 12+
 private val LightColorScheme = lightColorScheme(
     primary = Primary,
     onPrimary = OnPrimary,

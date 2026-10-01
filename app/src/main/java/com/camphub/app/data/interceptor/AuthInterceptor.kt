@@ -3,7 +3,7 @@ package com.camphub.app.data.interceptor
 import okhttp3.Interceptor
 import okhttp3.Response
 
-// Adds the JWT to every request (lecturer demo pattern)
+// Adds the login token to every request
 class AuthInterceptor(private val bearerToken: String) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
