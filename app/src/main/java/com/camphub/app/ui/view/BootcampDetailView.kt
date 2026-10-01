@@ -6,19 +6,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Business
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +61,7 @@ fun BootcampDetailView(
     onEdit: () -> Unit,
     onDeleted: () -> Unit,
     onProgramClick: (Long) -> Unit,
+    onAddProgram: () -> Unit,
     viewModel: BootcampDetailViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -121,7 +127,9 @@ fun BootcampDetailView(
             is UiState.Success -> BootcampDetailContent(
                 bootcamp = state.data,
                 programs = programs,
+                canAddProgram = isOwner,
                 onProgramClick = onProgramClick,
+                onAddProgram = onAddProgram,
                 modifier = contentModifier
             )
         }
@@ -145,7 +153,9 @@ fun BootcampDetailView(
 private fun BootcampDetailContent(
     bootcamp: Bootcamp,
     programs: List<Program>,
+    canAddProgram: Boolean,
     onProgramClick: (Long) -> Unit,
+    onAddProgram: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -159,11 +169,23 @@ private fun BootcampDetailContent(
         // Review summary goes here (above the program list)
 
         item {
-            Text(
-                text = "Program",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(top = 12.dp)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "Program", style = MaterialTheme.typography.titleLarge)
+                // Only the bootcamp owner can add a program
+                if (canAddProgram) {
+                    FilledTonalButton(onClick = onAddProgram) {
+                        Icon(imageVector = Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "Tambah Program")
+                    }
+                }
+            }
         }
         if (programs.isEmpty()) {
             item {
@@ -252,10 +274,11 @@ private fun BootcampDetailContentPreview() {
                     durationWeeks = 12,
                     syllabus = "",
                     registrationOpen = true
-
                 )
             ),
-            onProgramClick = {}
+            canAddProgram = true,
+            onProgramClick = {},
+            onAddProgram = {}
         )
     }
 }

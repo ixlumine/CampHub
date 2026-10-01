@@ -14,23 +14,32 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.School
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.camphub.app.data.container.CampHubServerContainer
 import com.camphub.app.ui.model.Program
 import com.camphub.app.ui.state.UiState
 import com.camphub.app.ui.theme.CampHubTheme
@@ -41,12 +50,36 @@ import com.camphub.app.ui.viewmodel.ProgramDetailViewModel
 fun ProgramDetailView(
     programId: Long,
     onBack: () -> Unit,
+    onEdit: (bootcampId: Long) -> Unit,
+    onDeleted: () -> Unit,
     viewModel: ProgramDetailViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val ownerId by viewModel.ownerId.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    val deleteSuccess by viewModel.deleteSuccess.collectAsState()
+
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     // Load again whenever this screen is shown
     LaunchedEffect(programId) { viewModel.loadProgram(programId) }
+
+    LaunchedEffect(deleteSuccess) {
+        if (deleteSuccess) onDeleted()
+    }
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearError()
+        }
+    }
+
+    // Buttons by role and owner; the backend also checks this
+    val program = (uiState as? UiState.Success)?.data
+    val isOwner = program != null && ownerId == CampHubServerContainer.CURRENT_USER_ID
+    val isAdmin = program != null && CampHubServerContainer.CURRENT_ROLE == "ADMIN"
 
     Scaffold(
         topBar = {
@@ -56,9 +89,22 @@ fun ProgramDetailView(
                     IconButton(onClick = onBack) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali")
                     }
+                },
+                actions = {
+                    if (program != null && isOwner) {
+                        IconButton(onClick = { onEdit(program.bootcampId) }) {
+                            Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Ubah")
+                        }
+                    }
+                    if (isOwner || isAdmin) {
+                        IconButton(onClick = { showDeleteDialog = true }) {
+                            Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Hapus")
+                        }
+                    }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
         val contentModifier = Modifier.padding(innerPadding)
         when (val state = uiState) {
@@ -70,6 +116,18 @@ fun ProgramDetailView(
             )
             is UiState.Success -> ProgramDetailContent(program = state.data, modifier = contentModifier)
         }
+    }
+
+    if (showDeleteDialog && program != null) {
+        DeleteDialog(
+            title = "Hapus program?",
+            message = "${program.name} akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.",
+            onConfirm = {
+                showDeleteDialog = false
+                viewModel.deleteProgram(program.id)
+            },
+            onDismiss = { showDeleteDialog = false }
+        )
     }
 }
 
