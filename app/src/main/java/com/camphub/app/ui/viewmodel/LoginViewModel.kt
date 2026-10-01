@@ -29,6 +29,7 @@ class LoginViewModel : ViewModel() {
                 CampHubServerContainer.ACCESS_TOKEN = auth.token
                 CampHubServerContainer.CURRENT_USER_ID = auth.userId
                 CampHubServerContainer.CURRENT_ROLE = auth.role
+                CampHubServerContainer.CURRENT_NAME = auth.name
                 _loginSuccess.value = true
             } catch (e: CancellationException) {
                 throw e

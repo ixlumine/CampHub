@@ -15,6 +15,7 @@ class CampHubServerContainer {
         var ACCESS_TOKEN = ""
         var CURRENT_USER_ID: Long = -1
         var CURRENT_ROLE = ""
+        var CURRENT_NAME = ""
     }
 
     private val client = OkHttpClient.Builder()
