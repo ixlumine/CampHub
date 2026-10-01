@@ -2,7 +2,9 @@ package com.camphub.app.data.container
 
 import com.camphub.app.data.interceptor.AuthInterceptor
 import com.camphub.app.data.repository.AuthServerRepositories
+import com.camphub.app.data.repository.BootcampServerRepositories
 import com.camphub.app.data.service.AuthServerService
+import com.camphub.app.data.service.BootcampServerService
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -37,5 +39,14 @@ class CampHubServerContainer {
 
     val authServerRepository: AuthServerRepositories by lazy {
         AuthServerRepositories(authService)
+    }
+
+    // Bootcamp and program
+    private val bootcampService: BootcampServerService by lazy {
+        retrofit.create(BootcampServerService::class.java)
+    }
+
+    val bootcampServerRepository: BootcampServerRepositories by lazy {
+        BootcampServerRepositories(bootcampService)
     }
 }

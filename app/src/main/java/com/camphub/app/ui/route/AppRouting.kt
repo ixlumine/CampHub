@@ -5,9 +5,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.camphub.app.data.container.CampHubServerContainer
+import com.camphub.app.ui.view.BootcampDetailView
+import com.camphub.app.ui.view.BootcampFormView
 import com.camphub.app.ui.view.BootcampListView
 import com.camphub.app.ui.view.ForumListView
 import com.camphub.app.ui.view.LoginView
+import com.camphub.app.ui.view.ProgramDetailView
+import com.camphub.app.ui.view.ProgramFormView
 import com.camphub.app.ui.view.RankingView
 import com.camphub.app.ui.view.RegisterView
 
@@ -17,7 +21,11 @@ enum class AppView {
     Register,
     Ranking,
     Catalog,
-    Forum
+    Forum,
+    BootcampDetail,
+    BootcampForm,
+    ProgramDetail,
+    ProgramForm
 }
 
 @Composable
@@ -71,10 +79,75 @@ fun AppRouting() {
             RankingView(onTabSelected = openTab, onLogout = logout)
         }
         composable(AppView.Catalog.name) {
-            BootcampListView(onTabSelected = openTab, onLogout = logout)
+            BootcampListView(
+                onTabSelected = openTab,
+                onLogout = logout,
+                onBootcampClick = { id -> navController.navigate("${AppView.BootcampDetail.name}/$id") },
+                onAddClick = { navController.navigate(AppView.BootcampForm.name) }
+            )
         }
         composable(AppView.Forum.name) {
             ForumListView(onTabSelected = openTab, onLogout = logout)
+        }
+
+        // Catalog
+        composable("${AppView.BootcampDetail.name}/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")!!.toLong()
+            BootcampDetailView(
+                bootcampId = id,
+                onBack = { navController.popBackStack() },
+                onEdit = { navController.navigate("${AppView.BootcampForm.name}/$id") },
+                onDeleted = { navController.popBackStack() },
+                onProgramClick = { programId -> navController.navigate("${AppView.ProgramDetail.name}/$programId") },
+                onAddProgram = { navController.navigate("${AppView.ProgramForm.name}/$id") }
+            )
+        }
+        // Add
+        composable(AppView.BootcampForm.name) {
+            BootcampFormView(
+                bootcampId = null,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
+            )
+        }
+        // Edit
+        composable("${AppView.BootcampForm.name}/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")!!.toLong()
+            BootcampFormView(
+                bootcampId = id,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
+            )
+        }
+        composable("${AppView.ProgramDetail.name}/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")!!.toLong()
+            ProgramDetailView(
+                programId = id,
+                onBack = { navController.popBackStack() },
+                onEdit = { bootcampId -> navController.navigate("${AppView.ProgramForm.name}/$bootcampId/$id") },
+                onDeleted = { navController.popBackStack() }
+            )
+        }
+        // Add program to a bootcamp
+        composable("${AppView.ProgramForm.name}/{bootcampId}") { backStackEntry ->
+            val bootcampId = backStackEntry.arguments?.getString("bootcampId")!!.toLong()
+            ProgramFormView(
+                bootcampId = bootcampId,
+                programId = null,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
+            )
+        }
+        // Edit program
+        composable("${AppView.ProgramForm.name}/{bootcampId}/{id}") { backStackEntry ->
+            val bootcampId = backStackEntry.arguments?.getString("bootcampId")!!.toLong()
+            val id = backStackEntry.arguments?.getString("id")!!.toLong()
+            ProgramFormView(
+                bootcampId = bootcampId,
+                programId = id,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
+            )
         }
     }
 }
