@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.camphub.app.ui.theme.CampHubTheme
 
-// Non-clickable status capsule: icon 16 dp + labelMedium (mockup D)
+// Non-clickable status label: 16 dp icon and short text
 // highlighted = primaryContainer, otherwise surfaceVariant
 @Composable
 fun StatusLabel(text: String, icon: ImageVector, highlighted: Boolean = true) {
@@ -53,7 +53,6 @@ private fun StatusLabelPreview() {
             StatusLabel(text = "Ditutup", icon = Icons.Outlined.Block, highlighted = false)
             StatusLabel(text = "Diterima Bekerja", icon = Icons.Outlined.Work)
             StatusLabel(text = "Mencari Kerja", icon = Icons.Outlined.Search, highlighted = false)
-            StatusLabel(text = "Terjawab", icon = Icons.Outlined.CheckCircle)
         }
     }
 }

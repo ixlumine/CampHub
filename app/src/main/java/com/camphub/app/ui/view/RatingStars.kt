@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.camphub.app.ui.theme.CampHubTheme
 
-// Five stars: full = whole part, one half if decimal >= 0.5, rest outlined (mockup D)
+// Five stars: full for the whole part, one half if the decimal is 0.5 or more, the rest outlined
 // Per-review ratings (1–5) are whole numbers, so they show only full and outlined stars
 @Composable
 fun RatingStars(rating: Double, starSize: Dp = 16.dp) {

@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.camphub.app.ui.route.AppView
 
-// Bottom navigation for the three tabs (spec 6.5)
+// Bottom navigation for the three tabs
 @Composable
 fun CampHubNavigationBar(selected: AppView, onTabSelected: (AppView) -> Unit) {
     NavigationBar {

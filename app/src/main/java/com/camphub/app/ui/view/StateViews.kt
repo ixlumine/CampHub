@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.camphub.app.ui.theme.CampHubTheme
 
-// Screen states for UiState (mockup D "Keadaan layar")
+// Loading, empty, and error screens
 
 // Loading: progress indicator in the center
 @Composable

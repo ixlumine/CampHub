@@ -18,11 +18,11 @@ class RegisterViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
-    // Validation errors per field: "name", "email", "password" (mockup Register)
+    // Validation errors per field: "name", "email", "password"
     private val _fieldErrors = MutableStateFlow<Map<String, String>>(emptyMap())
     val fieldErrors: StateFlow<Map<String, String>> = _fieldErrors
 
-    // Register response already has a token, so the user is logged in directly (spec 6.5)
+    // Register returns a token, so the user is logged in right away
     private val _registerSuccess = MutableStateFlow(false)
     val registerSuccess: StateFlow<Boolean> = _registerSuccess
 

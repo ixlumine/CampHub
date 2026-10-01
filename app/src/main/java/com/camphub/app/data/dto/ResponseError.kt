@@ -1,6 +1,6 @@
 package com.camphub.app.data.dto
 
-// Error body from the backend (spec 9.1)
+// Error body sent by the backend
 data class ResponseError(
     val details: List<Detail>?,
     val error: String,
@@ -21,7 +21,7 @@ fun ResponseError?.toUserMessage(fallback: String): String =
         ?: this?.message
         ?: fallback
 
-// Carries per-field validation messages so forms can mark each field (spec 6.2, rule 6)
+// Error with a message for each form field
 class ApiException(message: String, val fieldErrors: Map<String, String>) : Exception(message)
 
 fun ResponseError?.toApiException(fallback: String): ApiException =

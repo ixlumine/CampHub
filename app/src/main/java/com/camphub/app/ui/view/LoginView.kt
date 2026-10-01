@@ -62,12 +62,12 @@ fun LoginView(
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Navigation is done by AppRouting through the callback (spec 6.4)
+    // AppRouting handles navigation through this callback
     LaunchedEffect(loginSuccess) {
         if (loginSuccess) onLoginSuccess()
     }
 
-    // Server errors are shown in a Snackbar (mockup "Login — gagal")
+    // Show server errors in a Snackbar
     LaunchedEffect(errorMessage) {
         errorMessage?.let {
             snackbarHostState.showSnackbar(it)

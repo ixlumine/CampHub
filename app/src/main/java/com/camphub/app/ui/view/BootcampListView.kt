@@ -24,7 +24,7 @@ fun BootcampListView(onTabSelected: (AppView) -> Unit, onLogout: () -> Unit) {
         },
         bottomBar = { CampHubNavigationBar(selected = AppView.Catalog, onTabSelected = onTabSelected) }
     ) { innerPadding ->
-        // Skeleton from the foundation; Dev 1 fills the content (spec 6.5)
+        // Placeholder content
         Box(
             modifier = Modifier
                 .fillMaxSize()

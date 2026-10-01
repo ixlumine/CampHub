@@ -16,7 +16,7 @@ class LoginViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
-    // View observes this and calls onLoginSuccess (spec 6.4, navigation)
+    // The view watches this and calls onLoginSuccess
     private val _loginSuccess = MutableStateFlow(false)
     val loginSuccess: StateFlow<Boolean> = _loginSuccess
 

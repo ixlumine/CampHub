@@ -11,7 +11,7 @@ import com.camphub.app.ui.view.LoginView
 import com.camphub.app.ui.view.RankingView
 import com.camphub.app.ui.view.RegisterView
 
-// Each developer adds their routes here (spec 6.2, rule 3)
+// Add new routes here
 enum class AppView {
     Login,
     Register,
@@ -24,7 +24,7 @@ enum class AppView {
 fun AppRouting() {
     val navController = rememberNavController()
 
-    // After login/register: open the first tab and remove Login/Register from history (spec 6.5)
+    // After login or register: open the first tab and remove Login/Register from history
     val openMain: () -> Unit = {
         navController.navigate(AppView.Ranking.name) {
             popUpTo(AppView.Login.name) { inclusive = true }
@@ -32,7 +32,7 @@ fun AppRouting() {
         }
     }
 
-    // Switch tabs: keep one copy of each tab, Back returns to Ranking (spec 6.5)
+    // Switch tabs: keep one copy of each tab; Back returns to the first tab
     val openTab: (AppView) -> Unit = { tab ->
         navController.navigate(tab.name) {
             popUpTo(AppView.Ranking.name) { saveState = true }
@@ -41,7 +41,7 @@ fun AppRouting() {
         }
     }
 
-    // Logout: clear the session, go to Login, clear all history (spec 6.5)
+    // Logout: clear the session and history, then show Login
     val logout: () -> Unit = {
         CampHubServerContainer.ACCESS_TOKEN = ""
         CampHubServerContainer.CURRENT_USER_ID = -1
@@ -66,7 +66,7 @@ fun AppRouting() {
             )
         }
 
-        // Tabs (skeletons from the foundation, content by Dev 1–3)
+        // Tabs
         composable(AppView.Ranking.name) {
             RankingView(onTabSelected = openTab, onLogout = logout)
         }

@@ -24,7 +24,7 @@ fun ForumListView(onTabSelected: (AppView) -> Unit, onLogout: () -> Unit) {
         },
         bottomBar = { CampHubNavigationBar(selected = AppView.Forum, onTabSelected = onTabSelected) }
     ) { innerPadding ->
-        // Skeleton from the foundation; Dev 3 fills the content (spec 6.5)
+        // Placeholder content
         Box(
             modifier = Modifier
                 .fillMaxSize()

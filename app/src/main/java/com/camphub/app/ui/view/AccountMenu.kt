@@ -20,7 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.camphub.app.data.container.CampHubServerContainer
 
-// Avatar in the TopAppBar of the three tabs (spec 6.5, mockup "Menu avatar")
+// Account icon in the top bar of each tab
 @Composable
 fun AccountMenu(onLogout: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
@@ -59,7 +59,7 @@ fun AccountMenu(onLogout: () -> Unit) {
     }
 }
 
-// Role labels (spec 6.5)
+// Role names shown to the user
 private fun roleLabel(role: String): String = when (role) {
     "ADMIN" -> "Admin"
     "PROVIDER" -> "Penyedia Bootcamp"

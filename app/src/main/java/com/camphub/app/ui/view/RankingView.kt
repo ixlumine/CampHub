@@ -24,7 +24,7 @@ fun RankingView(onTabSelected: (AppView) -> Unit, onLogout: () -> Unit) {
         },
         bottomBar = { CampHubNavigationBar(selected = AppView.Ranking, onTabSelected = onTabSelected) }
     ) { innerPadding ->
-        // Skeleton from the foundation; Dev 2 fills the content (spec 6.5)
+        // Placeholder content
         Box(
             modifier = Modifier
                 .fillMaxSize()
