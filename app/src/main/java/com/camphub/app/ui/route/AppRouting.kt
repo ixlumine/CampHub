@@ -10,6 +10,7 @@ import com.camphub.app.ui.view.BootcampFormView
 import com.camphub.app.ui.view.BootcampListView
 import com.camphub.app.ui.view.ForumListView
 import com.camphub.app.ui.view.LoginView
+import com.camphub.app.ui.view.ProgramDetailView
 import com.camphub.app.ui.view.RankingView
 import com.camphub.app.ui.view.RegisterView
 
@@ -21,7 +22,8 @@ enum class AppView {
     Catalog,
     Forum,
     BootcampDetail,
-    BootcampForm
+    BootcampForm,
+    ProgramDetail
 }
 
 @Composable
@@ -93,7 +95,8 @@ fun AppRouting() {
                 bootcampId = id,
                 onBack = { navController.popBackStack() },
                 onEdit = { navController.navigate("${AppView.BootcampForm.name}/$id") },
-                onDeleted = { navController.popBackStack() }
+                onDeleted = { navController.popBackStack() },
+                onProgramClick = { programId -> navController.navigate("${AppView.ProgramDetail.name}/$programId") }
             )
         }
         // Add
@@ -112,6 +115,11 @@ fun AppRouting() {
                 onBack = { navController.popBackStack() },
                 onSaved = { navController.popBackStack() }
             )
+        }
+
+        composable("${AppView.ProgramDetail.name}/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")!!.toLong()
+            ProgramDetailView(programId = id, onBack = { navController.popBackStack() })
         }
     }
 }

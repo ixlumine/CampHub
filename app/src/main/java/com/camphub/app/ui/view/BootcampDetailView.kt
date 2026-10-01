@@ -55,6 +55,7 @@ fun BootcampDetailView(
     onBack: () -> Unit,
     onEdit: () -> Unit,
     onDeleted: () -> Unit,
+    onProgramClick: (Long) -> Unit,
     viewModel: BootcampDetailViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -120,6 +121,7 @@ fun BootcampDetailView(
             is UiState.Success -> BootcampDetailContent(
                 bootcamp = state.data,
                 programs = programs,
+                onProgramClick = onProgramClick,
                 modifier = contentModifier
             )
         }
@@ -140,7 +142,12 @@ fun BootcampDetailView(
 
 // Screen content without the top bar, so it can be previewed
 @Composable
-private fun BootcampDetailContent(bootcamp: Bootcamp, programs: List<Program>, modifier: Modifier = Modifier) {
+private fun BootcampDetailContent(
+    bootcamp: Bootcamp,
+    programs: List<Program>,
+    onProgramClick: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(16.dp),
@@ -167,7 +174,9 @@ private fun BootcampDetailContent(bootcamp: Bootcamp, programs: List<Program>, m
                 )
             }
         } else {
-            items(programs) { program -> ProgramCard(program = program) }
+            items(programs) { program ->
+                ProgramCard(program = program, onClick = { onProgramClick(program.id) })
+            }
         }
 
         // Review list goes here (below the program list)
@@ -243,8 +252,10 @@ private fun BootcampDetailContentPreview() {
                     durationWeeks = 12,
                     syllabus = "",
                     registrationOpen = true
+
                 )
-            )
+            ),
+            onProgramClick = {}
         )
     }
 }

@@ -26,10 +26,10 @@ import com.camphub.app.ui.theme.CampHubTheme
 import java.text.NumberFormat
 import java.util.Locale
 
-// Program card on the bootcamp detail screen
+// Program card on the bootcamp detail screen; tap to open the program
 @Composable
-fun ProgramCard(program: Program, modifier: Modifier = Modifier) {
-    OutlinedCard(modifier = modifier.fillMaxWidth()) {
+fun ProgramCard(program: Program, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    OutlinedCard(onClick = onClick, modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = program.name, style = MaterialTheme.typography.titleMedium)
             Text(
@@ -84,7 +84,8 @@ private fun ProgramCardPreview() {
                     durationWeeks = 12,
                     syllabus = "",
                     registrationOpen = true
-                )
+                ),
+                onClick = {}
             )
             ProgramCard(
                 program = Program(
@@ -97,7 +98,8 @@ private fun ProgramCardPreview() {
                     durationWeeks = 10,
                     syllabus = "",
                     registrationOpen = false
-                )
+                ),
+                onClick = {}
             )
         }
     }
