@@ -12,10 +12,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Business
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -33,6 +35,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.camphub.app.data.container.CampHubServerContainer
 import com.camphub.app.ui.model.Bootcamp
 import com.camphub.app.ui.route.AppView
 import com.camphub.app.ui.state.UiState
@@ -45,6 +48,7 @@ fun BootcampListView(
     onTabSelected: (AppView) -> Unit,
     onLogout: () -> Unit,
     onBootcampClick: (Long) -> Unit,
+    onAddClick: () -> Unit,
     viewModel: BootcampListViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -59,7 +63,21 @@ fun BootcampListView(
                 actions = { AccountMenu(onLogout = onLogout) }
             )
         },
-        bottomBar = { CampHubNavigationBar(selected = AppView.Catalog, onTabSelected = onTabSelected) }
+        bottomBar = { CampHubNavigationBar(selected = AppView.Catalog, onTabSelected = onTabSelected) },
+
+        floatingActionButton = {
+            // Only providers can add a bootcamp
+            if (CampHubServerContainer.CURRENT_ROLE == "PROVIDER") {
+                ExtendedFloatingActionButton(
+                    onClick = onAddClick,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    icon = { Icon(imageVector = Icons.Filled.Add, contentDescription = null) },
+                    text = { Text(text = "Tambah Bootcamp") }
+                )
+            }
+        }
+
     ) { innerPadding ->
         val contentModifier = Modifier.padding(innerPadding)
         when (val state = uiState) {

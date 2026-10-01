@@ -19,6 +19,14 @@ class BootcampDetailViewModel : ViewModel() {
     private val _programs = MutableStateFlow<List<Program>>(emptyList())
     val programs: StateFlow<List<Program>> = _programs
 
+    // Delete errors shown in a Snackbar (e.g. bootcamp still has programs)
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
+    // The view watches this and goes back
+    private val _deleteSuccess = MutableStateFlow(false)
+    val deleteSuccess: StateFlow<Boolean> = _deleteSuccess
+
     fun loadBootcamp(id: Long) {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
@@ -37,5 +45,25 @@ class BootcampDetailViewModel : ViewModel() {
                 _uiState.value = UiState.Error(e.message ?: "Terjadi kesalahan")
             }
         }
+    }
+
+    fun deleteBootcamp(id: Long) {
+        viewModelScope.launch {
+            try {
+                CampHubServerContainer().bootcampServerRepository.deleteBootcamp(id)
+                _deleteSuccess.value = true
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: IOException) {
+                _errorMessage.value = "Tidak dapat terhubung ke server"
+            } catch (e: Exception) {
+                _errorMessage.value = e.message ?: "Terjadi kesalahan"
+            }
+        }
+    }
+
+    // Called by the View after the Snackbar is shown
+    fun clearError() {
+        _errorMessage.value = null
     }
 }
