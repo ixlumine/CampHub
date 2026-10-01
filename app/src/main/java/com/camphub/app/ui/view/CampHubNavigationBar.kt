@@ -3,7 +3,7 @@ package com.camphub.app.ui.view
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Forum
-import androidx.compose.material.icons.outlined.Leaderboard
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -18,8 +18,8 @@ fun CampHubNavigationBar(selected: AppView, onTabSelected: (AppView) -> Unit) {
         NavigationBarItem(
             selected = selected == AppView.Ranking,
             onClick = { onTabSelected(AppView.Ranking) },
-            icon = { Icon(imageVector = Icons.Outlined.Leaderboard, contentDescription = null) },
-            label = { Text(text = "Peringkat") }
+            icon = { Icon(imageVector = Icons.Outlined.Home, contentDescription = null) },
+            label = { Text(text = "Beranda") }
         )
         NavigationBarItem(
             selected = selected == AppView.Catalog,
