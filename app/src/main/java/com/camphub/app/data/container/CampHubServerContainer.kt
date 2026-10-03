@@ -3,8 +3,10 @@ package com.camphub.app.data.container
 import com.camphub.app.data.interceptor.AuthInterceptor
 import com.camphub.app.data.repository.AuthServerRepositories
 import com.camphub.app.data.repository.BootcampServerRepositories
+import com.camphub.app.data.repository.ForumServerRepositories
 import com.camphub.app.data.service.AuthServerService
 import com.camphub.app.data.service.BootcampServerService
+import com.camphub.app.data.service.ForumServerService
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -48,5 +50,14 @@ class CampHubServerContainer {
 
     val bootcampServerRepository: BootcampServerRepositories by lazy {
         BootcampServerRepositories(bootcampService)
+    }
+
+    // Forum
+    private val forumService: ForumServerService by lazy {
+        retrofit.create(ForumServerService::class.java)
+    }
+
+    val forumServerRepository: ForumServerRepositories by lazy {
+        ForumServerRepositories(forumService)
     }
 }
