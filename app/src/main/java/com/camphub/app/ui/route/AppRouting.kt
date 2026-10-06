@@ -8,9 +8,9 @@ import com.camphub.app.data.container.CampHubServerContainer
 import com.camphub.app.ui.view.BootcampDetailView
 import com.camphub.app.ui.view.BootcampFormView
 import com.camphub.app.ui.view.BootcampListView
-import com.camphub.app.ui.view.ForumDetailView
-import com.camphub.app.ui.view.ForumFormView
 import com.camphub.app.ui.view.ForumListView
+import com.camphub.app.ui.view.ForumThreadDetailView
+import com.camphub.app.ui.view.ForumThreadFormView
 import com.camphub.app.ui.view.LoginView
 import com.camphub.app.ui.view.ProgramDetailView
 import com.camphub.app.ui.view.ProgramFormView
@@ -94,32 +94,8 @@ fun AppRouting() {
             ForumListView(
                 onTabSelected = openTab,
                 onLogout = logout,
-                onPostClick = { id -> navController.navigate("${AppView.ForumDetail.name}/$id") },
+                onThreadClick = { id -> navController.navigate("${AppView.ForumDetail.name}/$id") },
                 onAddClick = { navController.navigate(AppView.ForumForm.name) }
-            )
-        }
-        composable("${AppView.ForumDetail.name}/{id}") { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id")!!.toLong()
-            ForumDetailView(
-                postId = id,
-                onBack = { navController.popBackStack() },
-                onEdit = { navController.navigate("${AppView.ForumForm.name}/$id") },
-                onDeleted = { navController.popBackStack() }
-            )
-        }
-        composable(AppView.ForumForm.name) {
-            ForumFormView(
-                postId = null,
-                onBack = { navController.popBackStack() },
-                onSaved = { navController.popBackStack() }
-            )
-        }
-        composable("${AppView.ForumForm.name}/{id}") { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id")!!.toLong()
-            ForumFormView(
-                postId = id,
-                onBack = { navController.popBackStack() },
-                onSaved = { navController.popBackStack() }
             )
         }
 
@@ -178,6 +154,32 @@ fun AppRouting() {
             ProgramFormView(
                 bootcampId = bootcampId,
                 programId = id,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
+            )
+        }
+
+        // Forum
+        composable("${AppView.ForumDetail.name}/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")!!.toLong()
+            ForumThreadDetailView(
+                threadId = id,
+                onBack = { navController.popBackStack() },
+                onEdit = { navController.navigate("${AppView.ForumForm.name}/$id") },
+                onDeleted = { navController.popBackStack() }
+            )
+        }
+        composable(AppView.ForumForm.name) {
+            ForumThreadFormView(
+                threadId = null,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
+            )
+        }
+        composable("${AppView.ForumForm.name}/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")!!.toLong()
+            ForumThreadFormView(
+                threadId = id,
                 onBack = { navController.popBackStack() },
                 onSaved = { navController.popBackStack() }
             )

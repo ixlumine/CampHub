@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.camphub.app.data.container.CampHubServerContainer
 import com.camphub.app.data.dto.ApiException
-import com.camphub.app.ui.model.ForumPost
+import com.camphub.app.ui.model.ForumThread
 import com.camphub.app.ui.state.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,9 +12,9 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
 
-class ForumFormViewModel : ViewModel() {
-    private val _loadState = MutableStateFlow<UiState<ForumPost?>>(UiState.Success(null))
-    val loadState: StateFlow<UiState<ForumPost?>> = _loadState
+class ForumThreadFormViewModel : ViewModel() {
+    private val _loadState = MutableStateFlow<UiState<ForumThread?>>(UiState.Success(null))
+    val loadState: StateFlow<UiState<ForumThread?>> = _loadState
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -28,12 +28,12 @@ class ForumFormViewModel : ViewModel() {
     private val _saveSuccess = MutableStateFlow(false)
     val saveSuccess: StateFlow<Boolean> = _saveSuccess
 
-    fun loadPost(id: Long) {
+    fun loadThread(id: Long) {
         viewModelScope.launch {
             _loadState.value = UiState.Loading
             try {
-                val (post, _) = CampHubServerContainer().forumServerRepository.getPostDetail(id)
-                _loadState.value = UiState.Success(post)
+                val thread = CampHubServerContainer().forumServerRepository.getThread(id)
+                _loadState.value = UiState.Success(thread)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: IOException) {
@@ -52,16 +52,19 @@ class ForumFormViewModel : ViewModel() {
             try {
                 val repo = CampHubServerContainer().forumServerRepository
                 if (id == null) {
-                    repo.createPost(title = title, content = content)
+                    repo.createThread(title = title, content = content)
                 } else {
-                    repo.updatePost(id = id, title = title, content = content)
+                    repo.updateThread(id = id, title = title, content = content)
                 }
                 _saveSuccess.value = true
             } catch (e: CancellationException) {
                 throw e
             } catch (e: ApiException) {
-                _errorMessage.value = e.message
-                _fieldErrors.value = e.fieldErrors
+                if (e.fieldErrors.isNotEmpty()) {
+                    _fieldErrors.value = e.fieldErrors
+                } else {
+                    _errorMessage.value = e.message ?: "Terjadi kesalahan"
+                }
             } catch (e: IOException) {
                 _errorMessage.value = "Tidak dapat terhubung ke server"
             } catch (e: Exception) {

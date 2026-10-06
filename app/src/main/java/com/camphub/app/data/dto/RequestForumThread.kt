@@ -1,6 +1,6 @@
 package com.camphub.app.data.dto
 
-data class RequestForumPost(
+data class RequestForumThread(
     val title: String,
     val content: String
 )

@@ -1,68 +1,76 @@
 package com.camphub.app.data.repository
 
 import com.camphub.app.data.dto.RequestForumComment
-import com.camphub.app.data.dto.RequestForumPost
+import com.camphub.app.data.dto.RequestForumThread
 import com.camphub.app.data.dto.ResponseError
 import com.camphub.app.data.dto.toApiException
 import com.camphub.app.data.dto.toForumComment
-import com.camphub.app.data.dto.toForumPost
+import com.camphub.app.data.dto.toForumThread
 import com.camphub.app.data.service.ForumServerService
 import com.camphub.app.ui.model.ForumComment
-import com.camphub.app.ui.model.ForumPost
+import com.camphub.app.ui.model.ForumThread
 import com.google.gson.Gson
 
 class ForumServerRepositories(private val service: ForumServerService) {
 
-    suspend fun getAllPosts(): List<ForumPost> {
-        val response = service.getPosts()
+    suspend fun getAllThreads(): List<ForumThread> {
+        val response = service.getThreads()
         if (!response.isSuccessful) {
             val error = Gson().fromJson(response.errorBody()?.charStream(), ResponseError::class.java)
             throw error.toApiException("Gagal memuat forum (${response.code()})")
         }
-        return response.body()!!.map { it.toForumPost() }
+        return response.body()!!.map { it.toForumThread() }
     }
 
-    suspend fun getPostDetail(id: Long): Pair<ForumPost, List<ForumComment>> {
-        val response = service.getPostDetail(id)
+    suspend fun getThread(id: Long): ForumThread {
+        val response = service.getThread(id)
         if (!response.isSuccessful) {
             val error = Gson().fromJson(response.errorBody()?.charStream(), ResponseError::class.java)
             throw error.toApiException("Gagal memuat detail diskusi (${response.code()})")
         }
-        val detail = response.body()!!
-        return Pair(detail.post.toForumPost(), detail.comments.map { it.toForumComment() })
+        return response.body()!!.toForumThread()
     }
 
-    suspend fun createPost(title: String, content: String): ForumPost {
-        val request = RequestForumPost(title = title, content = content)
-        val response = service.createPost(request)
+    suspend fun getComments(threadId: Long): List<ForumComment> {
+        val response = service.getComments(threadId)
+        if (!response.isSuccessful) {
+            val error = Gson().fromJson(response.errorBody()?.charStream(), ResponseError::class.java)
+            throw error.toApiException("Gagal memuat komentar (${response.code()})")
+        }
+        return response.body()!!.map { it.toForumComment() }
+    }
+
+    suspend fun createThread(title: String, content: String): ForumThread {
+        val request = RequestForumThread(title = title, content = content)
+        val response = service.createThread(request)
         if (!response.isSuccessful) {
             val error = Gson().fromJson(response.errorBody()?.charStream(), ResponseError::class.java)
             throw error.toApiException("Gagal membuat diskusi (${response.code()})")
         }
-        return response.body()!!.toForumPost()
+        return response.body()!!.toForumThread()
     }
 
-    suspend fun updatePost(id: Long, title: String, content: String): ForumPost {
-        val request = RequestForumPost(title = title, content = content)
-        val response = service.updatePost(id, request)
+    suspend fun updateThread(id: Long, title: String, content: String): ForumThread {
+        val request = RequestForumThread(title = title, content = content)
+        val response = service.updateThread(id, request)
         if (!response.isSuccessful) {
             val error = Gson().fromJson(response.errorBody()?.charStream(), ResponseError::class.java)
             throw error.toApiException("Gagal mengubah diskusi (${response.code()})")
         }
-        return response.body()!!.toForumPost()
+        return response.body()!!.toForumThread()
     }
 
-    suspend fun deletePost(id: Long) {
-        val response = service.deletePost(id)
+    suspend fun deleteThread(id: Long) {
+        val response = service.deleteThread(id)
         if (!response.isSuccessful) {
             val error = Gson().fromJson(response.errorBody()?.charStream(), ResponseError::class.java)
             throw error.toApiException("Gagal menghapus diskusi (${response.code()})")
         }
     }
 
-    suspend fun addComment(postId: Long, content: String): ForumComment {
+    suspend fun addComment(threadId: Long, content: String): ForumComment {
         val request = RequestForumComment(content = content)
-        val response = service.addComment(postId, request)
+        val response = service.addComment(threadId, request)
         if (!response.isSuccessful) {
             val error = Gson().fromJson(response.errorBody()?.charStream(), ResponseError::class.java)
             throw error.toApiException("Gagal mengirim komentar (${response.code()})")

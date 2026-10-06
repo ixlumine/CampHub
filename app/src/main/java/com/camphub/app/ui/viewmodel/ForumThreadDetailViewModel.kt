@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.camphub.app.data.container.CampHubServerContainer
 import com.camphub.app.ui.model.ForumComment
-import com.camphub.app.ui.model.ForumPost
+import com.camphub.app.ui.model.ForumThread
 import com.camphub.app.ui.state.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,9 +12,9 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
 
-class ForumDetailViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow<UiState<ForumPost>>(UiState.Loading)
-    val uiState: StateFlow<UiState<ForumPost>> = _uiState
+class ForumThreadDetailViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow<UiState<ForumThread>>(UiState.Loading)
+    val uiState: StateFlow<UiState<ForumThread>> = _uiState
 
     private val _comments = MutableStateFlow<List<ForumComment>>(emptyList())
     val comments: StateFlow<List<ForumComment>> = _comments
@@ -28,13 +28,15 @@ class ForumDetailViewModel : ViewModel() {
     private val _isSubmittingComment = MutableStateFlow(false)
     val isSubmittingComment: StateFlow<Boolean> = _isSubmittingComment
 
-    fun loadPostDetail(id: Long) {
+    fun loadThreadDetail(id: Long) {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             try {
-                val (post, commentList) = CampHubServerContainer().forumServerRepository.getPostDetail(id)
+                val repo = CampHubServerContainer().forumServerRepository
+                val thread = repo.getThread(id)
+                val commentList = repo.getComments(id)
                 _comments.value = commentList
-                _uiState.value = UiState.Success(post)
+                _uiState.value = UiState.Success(thread)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: IOException) {
@@ -45,10 +47,10 @@ class ForumDetailViewModel : ViewModel() {
         }
     }
 
-    fun deletePost(id: Long) {
+    fun deleteThread(id: Long) {
         viewModelScope.launch {
             try {
-                CampHubServerContainer().forumServerRepository.deletePost(id)
+                CampHubServerContainer().forumServerRepository.deleteThread(id)
                 _deleteSuccess.value = true
             } catch (e: CancellationException) {
                 throw e
@@ -60,14 +62,14 @@ class ForumDetailViewModel : ViewModel() {
         }
     }
 
-    fun addComment(postId: Long, content: String, onCommentAdded: () -> Unit) {
+    fun addComment(threadId: Long, content: String, onCommentAdded: () -> Unit) {
         if (content.isBlank()) return
         viewModelScope.launch {
             _isSubmittingComment.value = true
             try {
-                CampHubServerContainer().forumServerRepository.addComment(postId, content)
+                CampHubServerContainer().forumServerRepository.addComment(threadId, content)
                 onCommentAdded()
-                loadPostDetail(postId)
+                loadThreadDetail(threadId)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: IOException) {
@@ -80,11 +82,11 @@ class ForumDetailViewModel : ViewModel() {
         }
     }
 
-    fun deleteComment(commentId: Long, postId: Long) {
+    fun deleteComment(commentId: Long, threadId: Long) {
         viewModelScope.launch {
             try {
                 CampHubServerContainer().forumServerRepository.deleteComment(commentId)
-                loadPostDetail(postId)
+                loadThreadDetail(threadId)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: IOException) {

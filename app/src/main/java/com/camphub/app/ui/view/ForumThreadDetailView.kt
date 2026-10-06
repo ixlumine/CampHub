@@ -41,22 +41,24 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.camphub.app.data.container.CampHubServerContainer
 import com.camphub.app.ui.model.ForumComment
-import com.camphub.app.ui.model.ForumPost
+import com.camphub.app.ui.model.ForumThread
 import com.camphub.app.ui.state.UiState
-import com.camphub.app.ui.viewmodel.ForumDetailViewModel
+import com.camphub.app.ui.theme.CampHubTheme
+import com.camphub.app.ui.viewmodel.ForumThreadDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ForumDetailView(
-    postId: Long,
+fun ForumThreadDetailView(
+    threadId: Long,
     onBack: () -> Unit,
     onEdit: () -> Unit,
     onDeleted: () -> Unit,
-    viewModel: ForumDetailViewModel = viewModel()
+    viewModel: ForumThreadDetailViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val comments by viewModel.comments.collectAsState()
@@ -64,12 +66,12 @@ fun ForumDetailView(
     val deleteSuccess by viewModel.deleteSuccess.collectAsState()
     val isSubmittingComment by viewModel.isSubmittingComment.collectAsState()
 
-    var showDeletePostDialog by rememberSaveable { mutableStateOf(false) }
+    var showDeleteThreadDialog by rememberSaveable { mutableStateOf(false) }
     var commentToDeleteId by rememberSaveable { mutableStateOf<Long?>(null) }
     var newCommentText by rememberSaveable { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(postId) { viewModel.loadPostDetail(postId) }
+    LaunchedEffect(threadId) { viewModel.loadThreadDetail(threadId) }
 
     LaunchedEffect(deleteSuccess) {
         if (deleteSuccess) onDeleted()
@@ -82,11 +84,12 @@ fun ForumDetailView(
         }
     }
 
-    val post = (uiState as? UiState.Success)?.data
+    val thread = (uiState as? UiState.Success)?.data
     val currentUserId = CampHubServerContainer.CURRENT_USER_ID
     val currentRole = CampHubServerContainer.CURRENT_ROLE
-    val isAuthor = post?.userId == currentUserId
+    val isAuthor = thread?.authorId == currentUserId
     val isAdmin = currentRole == "ADMIN"
+    val canComment = currentRole == "USER" || currentRole == "PROVIDER"
 
     Scaffold(
         topBar = {
@@ -104,7 +107,7 @@ fun ForumDetailView(
                         }
                     }
                     if (isAuthor || isAdmin) {
-                        IconButton(onClick = { showDeletePostDialog = true }) {
+                        IconButton(onClick = { showDeleteThreadDialog = true }) {
                             Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Hapus")
                         }
                     }
@@ -112,7 +115,7 @@ fun ForumDetailView(
             )
         },
         bottomBar = {
-            if (uiState is UiState.Success) {
+            if (uiState is UiState.Success && canComment) {
                 Surface(tonalElevation = 3.dp) {
                     Row(
                         modifier = Modifier
@@ -131,7 +134,7 @@ fun ForumDetailView(
                         )
                         IconButton(
                             onClick = {
-                                viewModel.addComment(postId, newCommentText) {
+                                viewModel.addComment(threadId, newCommentText) {
                                     newCommentText = ""
                                 }
                             },
@@ -158,11 +161,11 @@ fun ForumDetailView(
             is UiState.Loading -> LoadingView(modifier = contentModifier)
             is UiState.Error -> ErrorView(
                 message = state.message,
-                onRetry = { viewModel.loadPostDetail(postId) },
+                onRetry = { viewModel.loadThreadDetail(threadId) },
                 modifier = contentModifier
             )
-            is UiState.Success -> ForumDetailContent(
-                post = state.data,
+            is UiState.Success -> ForumThreadDetailContent(
+                thread = state.data,
                 comments = comments,
                 currentUserId = currentUserId,
                 isAdmin = isAdmin,
@@ -172,15 +175,15 @@ fun ForumDetailView(
         }
     }
 
-    if (showDeletePostDialog && post != null) {
+    if (showDeleteThreadDialog && thread != null) {
         DeleteDialog(
             title = "Hapus pertanyaan?",
             message = "Diskusi ini akan dihapus permanen beserta semua komentarnya. Tindakan ini tidak dapat dibatalkan.",
             onConfirm = {
-                showDeletePostDialog = false
-                viewModel.deletePost(post.id)
+                showDeleteThreadDialog = false
+                viewModel.deleteThread(thread.id)
             },
-            onDismiss = { showDeletePostDialog = false }
+            onDismiss = { showDeleteThreadDialog = false }
         )
     }
 
@@ -191,7 +194,7 @@ fun ForumDetailView(
             onConfirm = {
                 val cId = commentToDeleteId!!
                 commentToDeleteId = null
-                viewModel.deleteComment(cId, postId)
+                viewModel.deleteComment(cId, threadId)
             },
             onDismiss = { commentToDeleteId = null }
         )
@@ -199,8 +202,8 @@ fun ForumDetailView(
 }
 
 @Composable
-private fun ForumDetailContent(
-    post: ForumPost,
+private fun ForumThreadDetailContent(
+    thread: ForumThread,
     comments: List<ForumComment>,
     currentUserId: Long,
     isAdmin: Boolean,
@@ -214,7 +217,7 @@ private fun ForumDetailContent(
     ) {
         item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(text = post.title, style = MaterialTheme.typography.headlineSmall)
+                Text(text = thread.title, style = MaterialTheme.typography.headlineSmall)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -226,14 +229,20 @@ private fun ForumDetailContent(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = post.userName.take(1).uppercase(),
+                            text = thread.authorName.take(1).uppercase(),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
-                    Text(text = post.userName, style = MaterialTheme.typography.titleMedium)
+                    val dateFormatted = formatDate(thread.createdAt)
+                    val authorText = if (dateFormatted.isNotBlank()) "${thread.authorName} · $dateFormatted" else thread.authorName
+                    Text(
+                        text = authorText,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-                Text(text = post.content, style = MaterialTheme.typography.bodyLarge)
+                Text(text = thread.content, style = MaterialTheme.typography.bodyLarge)
             }
         }
 
@@ -258,7 +267,9 @@ private fun ForumDetailContent(
             }
         } else {
             items(comments) { comment ->
-                val canDeleteComment = comment.userId == currentUserId || post.userId == currentUserId || isAdmin
+                // Comment can only be deleted by comment author or ADMIN
+                val canDeleteComment = comment.authorId == currentUserId || isAdmin
+                val commentDate = formatDate(comment.createdAt)
                 ListItem(
                     leadingContent = {
                         Box(
@@ -268,14 +279,26 @@ private fun ForumDetailContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = comment.userName.take(1).uppercase(),
+                                text = comment.authorName.take(1).uppercase(),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                         }
                     },
                     headlineContent = {
-                        Text(text = comment.userName, style = MaterialTheme.typography.labelLarge)
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = comment.authorName, style = MaterialTheme.typography.labelLarge)
+                            if (commentDate.isNotBlank()) {
+                                Text(
+                                    text = commentDate,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                     },
                     supportingContent = {
                         Text(
@@ -298,5 +321,44 @@ private fun ForumDetailContent(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ForumThreadDetailContentPreview() {
+    CampHubTheme {
+        ForumThreadDetailContent(
+            thread = ForumThread(
+                id = 1,
+                authorId = 2,
+                authorName = "Andi Saputra",
+                title = "Apakah ada kelas malam untuk karyawan?",
+                content = "Saya bekerja sampai pukul 17.00 di hari kerja. Apakah program Full-Stack Web Developer punya jadwal kelas malam atau akhir pekan?",
+                commentCount = 2,
+                createdAt = "2026-09-20T19:00:00"
+            ),
+            comments = listOf(
+                ForumComment(
+                    id = 1,
+                    threadId = 1,
+                    authorId = 3,
+                    authorName = "Kode Nusantara",
+                    content = "Ada. Kelas malam berjalan Senin–Kamis pukul 19.00–21.30 WIB secara daring.",
+                    createdAt = "2026-09-20T21:00:00"
+                ),
+                ForumComment(
+                    id = 2,
+                    threadId = 1,
+                    authorId = 4,
+                    authorName = "Rina Wulandari",
+                    content = "Saya ikut kelas malam angkatan lalu. Jadwalnya cocok untuk yang bekerja.",
+                    createdAt = "2026-09-21T08:00:00"
+                )
+            ),
+            currentUserId = 4,
+            isAdmin = false,
+            onDeleteComment = {}
+        )
     }
 }

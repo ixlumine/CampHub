@@ -1,10 +1,11 @@
 package com.camphub.app.ui.model
 
-data class ForumComment(
+data class ForumThread(
     val id: Long,
-    val threadId: Long,
     val authorId: Long,
     val authorName: String,
+    val title: String,
     val content: String,
+    val commentCount: Int,
     val createdAt: String
 )

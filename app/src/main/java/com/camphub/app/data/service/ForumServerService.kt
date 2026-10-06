@@ -1,10 +1,9 @@
 package com.camphub.app.data.service
 
 import com.camphub.app.data.dto.RequestForumComment
-import com.camphub.app.data.dto.RequestForumPost
+import com.camphub.app.data.dto.RequestForumThread
 import com.camphub.app.data.dto.ResponseForumComment
-import com.camphub.app.data.dto.ResponseForumPost
-import com.camphub.app.data.dto.ResponseForumPostDetail
+import com.camphub.app.data.dto.ResponseForumThread
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -14,27 +13,30 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ForumServerService {
-    @GET("api/forum/posts")
-    suspend fun getPosts(): Response<List<ResponseForumPost>>
+    @GET("api/threads")
+    suspend fun getThreads(): Response<List<ResponseForumThread>>
 
-    @GET("api/forum/posts/{id}")
-    suspend fun getPostDetail(@Path("id") id: Long): Response<ResponseForumPostDetail>
+    @GET("api/threads/{id}")
+    suspend fun getThread(@Path("id") id: Long): Response<ResponseForumThread>
 
-    @POST("api/forum/posts")
-    suspend fun createPost(@Body request: RequestForumPost): Response<ResponseForumPost>
+    @POST("api/threads")
+    suspend fun createThread(@Body request: RequestForumThread): Response<ResponseForumThread>
 
-    @PUT("api/forum/posts/{id}")
-    suspend fun updatePost(@Path("id") id: Long, @Body request: RequestForumPost): Response<ResponseForumPost>
+    @PUT("api/threads/{id}")
+    suspend fun updateThread(@Path("id") id: Long, @Body request: RequestForumThread): Response<ResponseForumThread>
 
-    @DELETE("api/forum/posts/{id}")
-    suspend fun deletePost(@Path("id") id: Long): Response<Unit>
+    @DELETE("api/threads/{id}")
+    suspend fun deleteThread(@Path("id") id: Long): Response<Unit>
 
-    @POST("api/forum/posts/{postId}/comments")
+    @GET("api/threads/{id}/comments")
+    suspend fun getComments(@Path("id") threadId: Long): Response<List<ResponseForumComment>>
+
+    @POST("api/threads/{threadId}/comments")
     suspend fun addComment(
-        @Path("postId") postId: Long,
+        @Path("threadId") threadId: Long,
         @Body request: RequestForumComment
     ): Response<ResponseForumComment>
 
-    @DELETE("api/forum/comments/{commentId}")
+    @DELETE("api/comments/{commentId}")
     suspend fun deleteComment(@Path("commentId") commentId: Long): Response<Unit>
 }

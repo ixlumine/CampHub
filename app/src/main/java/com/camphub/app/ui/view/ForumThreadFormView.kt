@@ -31,18 +31,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.camphub.app.ui.state.UiState
-import com.camphub.app.ui.viewmodel.ForumFormViewModel
+import com.camphub.app.ui.theme.CampHubTheme
+import com.camphub.app.ui.viewmodel.ForumThreadFormViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ForumFormView(
-    postId: Long?,
+fun ForumThreadFormView(
+    threadId: Long?,
     onBack: () -> Unit,
     onSaved: () -> Unit,
-    viewModel: ForumFormViewModel = viewModel()
+    viewModel: ForumThreadFormViewModel = viewModel()
 ) {
     val loadState by viewModel.loadState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -55,15 +57,15 @@ fun ForumFormView(
     var isFilled by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(postId) {
-        if (postId != null && !isFilled) viewModel.loadPost(postId)
+    LaunchedEffect(threadId) {
+        if (threadId != null && !isFilled) viewModel.loadThread(threadId)
     }
 
     LaunchedEffect(loadState) {
-        val post = (loadState as? UiState.Success)?.data
-        if (post != null && !isFilled) {
-            title = post.title
-            content = post.content
+        val thread = (loadState as? UiState.Success)?.data
+        if (thread != null && !isFilled) {
+            title = thread.title
+            content = thread.content
             isFilled = true
         }
     }
@@ -82,7 +84,7 @@ fun ForumFormView(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = if (postId == null) "Buat Pertanyaan" else "Ubah Pertanyaan") },
+                title = { Text(text = if (threadId == null) "Buat Pertanyaan" else "Ubah Pertanyaan") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali")
@@ -92,7 +94,7 @@ fun ForumFormView(
         },
         bottomBar = {
             Button(
-                onClick = { viewModel.save(postId, title.trim(), content.trim()) },
+                onClick = { viewModel.save(threadId, title.trim(), content.trim()) },
                 enabled = !isLoading && loadState is UiState.Success,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,7 +103,7 @@ fun ForumFormView(
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                 } else {
-                    Text(text = if (postId == null) "Kirim Pertanyaan" else "Simpan")
+                    Text(text = if (threadId == null) "Kirim Pertanyaan" else "Simpan")
                 }
             }
         },
@@ -112,7 +114,7 @@ fun ForumFormView(
             is UiState.Loading -> LoadingView(modifier = contentModifier)
             is UiState.Error -> ErrorView(
                 message = state.message,
-                onRetry = { postId?.let { viewModel.loadPost(it) } },
+                onRetry = { threadId?.let { viewModel.loadThread(it) } },
                 modifier = contentModifier
             )
             is UiState.Success -> Column(
@@ -149,5 +151,13 @@ fun ForumFormView(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ForumThreadFormViewPreview() {
+    CampHubTheme {
+        ForumThreadFormView(threadId = null, onBack = {}, onSaved = {})
     }
 }
