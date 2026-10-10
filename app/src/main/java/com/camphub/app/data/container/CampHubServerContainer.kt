@@ -4,9 +4,11 @@ import com.camphub.app.data.interceptor.AuthInterceptor
 import com.camphub.app.data.repository.AuthServerRepositories
 import com.camphub.app.data.repository.BootcampServerRepositories
 import com.camphub.app.data.repository.ForumServerRepositories
+import com.camphub.app.data.repository.ReviewServerRepositories
 import com.camphub.app.data.service.AuthServerService
 import com.camphub.app.data.service.BootcampServerService
 import com.camphub.app.data.service.ForumServerService
+import com.camphub.app.data.service.ReviewServerService
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -14,8 +16,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class CampHubServerContainer {
     companion object {
-        // Emulator address for the laptop; for a phone via USB use http://127.0.0.1:8080/ after adb reverse
-        val BASE_URL = "http://10.0.2.2:8080/"
+        // Emulator: "http://10.0.2.2:8080/" | HP Fisik (setelah adb reverse tcp:8080 tcp:8080): "http://127.0.0.1:8080/"
+        val BASE_URL = "http://127.0.0.1:8080/"
         var ACCESS_TOKEN = ""
         var CURRENT_USER_ID: Long = -1
         var CURRENT_ROLE = ""
@@ -59,5 +61,14 @@ class CampHubServerContainer {
 
     val forumServerRepository: ForumServerRepositories by lazy {
         ForumServerRepositories(forumService)
+    }
+
+    // Review and ranking
+    private val reviewService: ReviewServerService by lazy {
+        retrofit.create(ReviewServerService::class.java)
+    }
+
+    val reviewServerRepository: ReviewServerRepositories by lazy {
+        ReviewServerRepositories(reviewService)
     }
 }
