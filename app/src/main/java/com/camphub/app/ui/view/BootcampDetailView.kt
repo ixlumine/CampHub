@@ -172,7 +172,6 @@ private fun BootcampDetailContent(
         item { BootcampHeader(bootcamp = bootcamp) }
         item { Text(text = bootcamp.description, style = MaterialTheme.typography.bodyLarge) }
 
-        // Review summary goes here (above the program list)
         item {
             ReviewSummaryCard(bootcampId = bootcamp.id)
         }
@@ -210,7 +209,6 @@ private fun BootcampDetailContent(
             }
         }
 
-        // Review list goes here (below the program list)
         item {
             BootcampReviewSection(
                 bootcampId = bootcamp.id,
