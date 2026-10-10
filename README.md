@@ -10,19 +10,19 @@ Aplikasi Android direktori bootcamp teknologi.
 
 ```
 app/src/main/java/com/camphub/app/
-├── data/
-│   ├── container/    Retrofit dan data login
-│   ├── interceptor/  Interceptor token
-│   ├── dto/          Request dan response
-│   ├── service/      Interface Retrofit
-│   └── repository/   Repository API
-└── ui/
-    ├── model/        Model UI
-    ├── state/        UiState
-    ├── route/        Navigasi
-    ├── theme/        Tema Material 3
-    ├── view/         Layar dan komponen
-    └── viewmodel/    ViewModel
+├── data/             Data layer
+│   ├── container/    Pembuatan Retrofit dan data login (token, user, role)
+│   ├── interceptor/  Menambahkan header Authorization: Bearer <token>
+│   ├── dto/          Data Transfer Object untuk request dan response API
+│   ├── service/      Daftar endpoint API (interface Retrofit)
+│   └── repository/   Mengambil data dari API dan mengubahnya menjadi model
+└── ui/               UI layer
+    ├── model/        Model data untuk ditampilkan
+    ├── state/        UI state (Loading, Success, Error)
+    ├── route/        Route dan NavHost
+    ├── theme/        Warna dan tipografi Material 3
+    ├── view/         Layar dan komponen Composable
+    └── viewmodel/    Menyimpan dan menyediakan state untuk UI
 ```
 
 ## Fitur
@@ -30,7 +30,7 @@ app/src/main/java/com/camphub/app/
 - **Beranda**: peringkat bootcamp.
   - Hanya bootcamp dengan minimal 3 ulasan.
   - Urutan: rata-rata rating tertinggi (dibulatkan 1 desimal), lalu jumlah ulasan terbanyak.
-- **Katalog**: daftar bootcamp, urut nama.
+- **Katalog**: daftar bootcamp, diurutkan berdasarkan nama (A–Z).
   - Detail bootcamp: profil, program, ringkasan ulasan, dan daftar ulasan.
   - Detail program: harga, durasi, silabus, dan keterangan pendaftaran dibuka atau ditutup.
 - **Forum**: pertanyaan dan komentar.
@@ -75,16 +75,13 @@ Setelah menambah atau menghapus baris `camphub.baseUrl`, klik **Sync Project wit
 
 ## Akun contoh
 
-Hanya untuk development.
+Dibuat oleh seed data backend saat database masih kosong. Hanya untuk development.
 
 | Role | Email | Password |
 |---|---|---|
 | ADMIN | admin@example.com | nilai `ADMIN_PASSWORD` di backend (default `admin_dev_password`) |
-| PROVIDER | kodenusantara@example.com | password123 |
-| PROVIDER | rintis@example.com | password123 |
-| USER | rina@example.com | password123 |
-| USER | bima@example.com | password123 |
-| USER | sekar@example.com | password123 |
+| PROVIDER | kodenusantara@example.com,<br>rintis@example.com | password123 |
+| USER | rina@example.com,<br>bima@example.com,<br>sekar@example.com | password123 |
 
 ## Jika gagal terhubung
 
