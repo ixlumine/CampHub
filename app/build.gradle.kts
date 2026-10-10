@@ -1,7 +1,18 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
 }
+
+// Server address. Default is the emulator address (http://10.0.2.2:8080/).
+// For a phone via USB, run "adb reverse tcp:8080 tcp:8080" and add
+// "camphub.baseUrl=http://127.0.0.1:8080/" to local.properties, not to this file.
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+val baseUrl = localProperties.getProperty("camphub.baseUrl", "http://10.0.2.2:8080/")
 
 android {
     namespace = "com.camphub.app"
@@ -17,6 +28,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
 
     buildTypes {
@@ -32,6 +44,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

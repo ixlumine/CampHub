@@ -1,5 +1,6 @@
 package com.camphub.app.data.container
 
+import com.camphub.app.BuildConfig
 import com.camphub.app.data.interceptor.AuthInterceptor
 import com.camphub.app.data.repository.AuthServerRepositories
 import com.camphub.app.data.repository.BootcampServerRepositories
@@ -16,8 +17,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class CampHubServerContainer {
     companion object {
-        // Emulator: "http://10.0.2.2:8080/" | HP Fisik (setelah adb reverse tcp:8080 tcp:8080): "http://127.0.0.1:8080/"
-        val BASE_URL = "http://127.0.0.1:8080/"
+        // Set in app/build.gradle.kts from local.properties
+        val BASE_URL = BuildConfig.BASE_URL
         var ACCESS_TOKEN = ""
         var CURRENT_USER_ID: Long = -1
         var CURRENT_ROLE = ""
