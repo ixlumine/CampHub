@@ -62,6 +62,8 @@ fun BootcampDetailView(
     onDeleted: () -> Unit,
     onProgramClick: (Long) -> Unit,
     onAddProgram: () -> Unit,
+    onWriteReview: () -> Unit,
+    onEditReview: (Long) -> Unit,
     viewModel: BootcampDetailViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -130,6 +132,8 @@ fun BootcampDetailView(
                 canAddProgram = isOwner,
                 onProgramClick = onProgramClick,
                 onAddProgram = onAddProgram,
+                onWriteReview = onWriteReview,
+                onEditReview = onEditReview,
                 modifier = contentModifier
             )
         }
@@ -156,6 +160,8 @@ private fun BootcampDetailContent(
     canAddProgram: Boolean,
     onProgramClick: (Long) -> Unit,
     onAddProgram: () -> Unit,
+    onWriteReview: () -> Unit,
+    onEditReview: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -167,6 +173,9 @@ private fun BootcampDetailContent(
         item { Text(text = bootcamp.description, style = MaterialTheme.typography.bodyLarge) }
 
         // Review summary goes here (above the program list)
+        item {
+            ReviewSummaryCard(bootcampId = bootcamp.id)
+        }
 
         item {
             Row(
@@ -202,6 +211,13 @@ private fun BootcampDetailContent(
         }
 
         // Review list goes here (below the program list)
+        item {
+            BootcampReviewSection(
+                bootcampId = bootcamp.id,
+                onWriteReview = onWriteReview,
+                onEditReview = onEditReview
+            )
+        }
     }
 }
 
@@ -278,7 +294,9 @@ private fun BootcampDetailContentPreview() {
             ),
             canAddProgram = true,
             onProgramClick = {},
-            onAddProgram = {}
+            onAddProgram = {},
+            onWriteReview = {},
+            onEditReview = {}
         )
     }
 }

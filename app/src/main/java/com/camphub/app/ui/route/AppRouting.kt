@@ -16,6 +16,7 @@ import com.camphub.app.ui.view.ProgramDetailView
 import com.camphub.app.ui.view.ProgramFormView
 import com.camphub.app.ui.view.RankingView
 import com.camphub.app.ui.view.RegisterView
+import com.camphub.app.ui.view.ReviewFormView
 
 // Add new routes here
 enum class AppView {
@@ -28,6 +29,7 @@ enum class AppView {
     BootcampForm,
     ProgramDetail,
     ProgramForm,
+    ReviewForm,
     ForumDetail,
     ForumForm
 }
@@ -80,7 +82,11 @@ fun AppRouting() {
 
         // Tabs
         composable(AppView.Ranking.name) {
-            RankingView(onTabSelected = openTab, onLogout = logout)
+            RankingView(
+                onTabSelected = openTab,
+                onLogout = logout,
+                onBootcampClick = { id -> navController.navigate("${AppView.BootcampDetail.name}/$id") }
+            )
         }
         composable(AppView.Catalog.name) {
             BootcampListView(
@@ -108,7 +114,9 @@ fun AppRouting() {
                 onEdit = { navController.navigate("${AppView.BootcampForm.name}/$id") },
                 onDeleted = { navController.popBackStack() },
                 onProgramClick = { programId -> navController.navigate("${AppView.ProgramDetail.name}/$programId") },
-                onAddProgram = { navController.navigate("${AppView.ProgramForm.name}/$id") }
+                onAddProgram = { navController.navigate("${AppView.ProgramForm.name}/$id") },
+                onWriteReview = { navController.navigate("${AppView.ReviewForm.name}/$id") },
+                onEditReview = { reviewId -> navController.navigate("${AppView.ReviewForm.name}/$id/$reviewId") }
             )
         }
         // Add
@@ -154,6 +162,29 @@ fun AppRouting() {
             ProgramFormView(
                 bootcampId = bootcampId,
                 programId = id,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
+            )
+        }
+
+        // Review
+        // Add review to a bootcamp
+        composable("${AppView.ReviewForm.name}/{bootcampId}") { backStackEntry ->
+            val bootcampId = backStackEntry.arguments?.getString("bootcampId")!!.toLong()
+            ReviewFormView(
+                bootcampId = bootcampId,
+                reviewId = null,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
+            )
+        }
+        // Edit review
+        composable("${AppView.ReviewForm.name}/{bootcampId}/{id}") { backStackEntry ->
+            val bootcampId = backStackEntry.arguments?.getString("bootcampId")!!.toLong()
+            val id = backStackEntry.arguments?.getString("id")!!.toLong()
+            ReviewFormView(
+                bootcampId = bootcampId,
+                reviewId = id,
                 onBack = { navController.popBackStack() },
                 onSaved = { navController.popBackStack() }
             )
