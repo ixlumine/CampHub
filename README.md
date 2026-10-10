@@ -12,8 +12,10 @@ Backend ada di repository `CampHubAPI`.
 ### HP lewat kabel USB
 
 1. Jalankan `adb reverse tcp:8080 tcp:8080`.
-2. Ubah `BASE_URL` di `CampHubServerContainer.kt` menjadi `http://127.0.0.1:8080/`.
-3. Klik **Run**.
+2. Tambahkan baris `camphub.baseUrl=http://127.0.0.1:8080/` di file `local.properties` (folder utama project). File ini tidak di-commit.
+3. Klik **Sync Project with Gradle Files**, lalu **Run**.
+
+Untuk kembali ke emulator, hapus baris tersebut, lalu Sync.
 
 ## Akun contoh
 
