@@ -1,23 +1,81 @@
 # CampHub
 
-Aplikasi Android untuk mencari dan membandingkan bootcamp. Tugas ALP Visual Programming, Universitas Ciputra.
-Backend ada di repository `CampHubAPI`.
+Aplikasi Android direktori bootcamp teknologi.
 
-## Cara menjalankan
+- **Teknologi:** Jetpack Compose, Material 3, MVVM, Retrofit
+- **Versi Android:** minimal Android 9 (API 28)
+- **Backend:** repository [CampHubAPI](https://github.com/ixlumine/CampHubAPI)
 
-1. Jalankan backend `CampHubAPI` (lihat README-nya). Tunggu sampai muncul `Started CampHubApiApplicationKt`, lalu beri jeda beberapa detik agar data contoh selesai diisi.
-2. Buka project ini di Android Studio, tunggu Gradle sync selesai.
-3. Pilih emulator, klik **Run**.
+## Struktur
 
-### HP lewat kabel USB
+```
+app/src/main/java/com/camphub/app/
+├── data/
+│   ├── container/    Retrofit dan data login
+│   ├── interceptor/  Interceptor token
+│   ├── dto/          Request dan response
+│   ├── service/      Interface Retrofit
+│   └── repository/   Repository API
+└── ui/
+    ├── model/        Model UI
+    ├── state/        UiState
+    ├── route/        Navigasi
+    ├── theme/        Tema Material 3
+    ├── view/         Layar dan komponen
+    └── viewmodel/    ViewModel
+```
 
+## Fitur
+
+- **Beranda**: peringkat bootcamp.
+  - Hanya bootcamp dengan minimal 3 ulasan.
+  - Urutan: rata-rata rating tertinggi (dibulatkan 1 desimal), lalu jumlah ulasan terbanyak.
+- **Katalog**: daftar bootcamp, urut nama.
+  - Detail bootcamp: profil, program, ringkasan ulasan, dan daftar ulasan.
+  - Detail program: harga, durasi, silabus, dan keterangan pendaftaran dibuka atau ditutup.
+- **Forum**: pertanyaan dan komentar.
+
+Tombol tambah, ubah, dan hapus tampil sesuai role dan pemilik data.
+
+## Prasyarat
+
+- Android Studio.
+- Backend [CampHubAPI](https://github.com/ixlumine/CampHubAPI) sudah berjalan (lihat [README](https://github.com/ixlumine/CampHubAPI/blob/main/README.md)).
+- Emulator, atau HP Android yang terhubung lewat USB dengan USB debugging aktif.
+
+## Konfigurasi
+
+Alamat backend diatur di `local.properties` (folder utama project). File ini dibuat Android Studio dan tidak di-commit.
+
+| Menjalankan di | Isi `camphub.baseUrl` | Keterangan |
+|---|---|---|
+| Emulator | Tidak perlu diisi (default `http://10.0.2.2:8080/`) | `10.0.2.2` adalah alamat laptop dari dalam emulator |
+| HP via USB | `http://127.0.0.1:8080/` | `adb reverse` meneruskan port 8080 di HP ke laptop |
+
+Nilai harus diakhiri `/`.
+
+Contoh `local.properties` untuk HP via USB (baris `sdk.dir` dibiarkan apa adanya):
+```
+sdk.dir=...
+camphub.baseUrl=http://127.0.0.1:8080/
+```
+
+Setelah menambah atau menghapus baris `camphub.baseUrl`, klik **Sync Project with Gradle Files**.
+
+## Menjalankan
+
+**Emulator**
+1. Buka project di Android Studio, tunggu Gradle sync selesai.
+2. Pilih emulator, klik **Run**.
+
+**HP via USB**
 1. Jalankan `adb reverse tcp:8080 tcp:8080`.
-2. Tambahkan baris `camphub.baseUrl=http://127.0.0.1:8080/` di file `local.properties` (folder utama project). File ini tidak di-commit.
-3. Klik **Sync Project with Gradle Files**, lalu **Run**.
-
-Untuk kembali ke emulator, hapus baris tersebut, lalu Sync.
+2. Pastikan `local.properties` sudah berisi `camphub.baseUrl` (lihat Konfigurasi).
+3. Pilih HP, klik **Run**.
 
 ## Akun contoh
+
+Hanya untuk development.
 
 | Role | Email | Password |
 |---|---|---|
@@ -30,7 +88,7 @@ Untuk kembali ke emulator, hapus baris tersebut, lalu Sync.
 
 ## Jika gagal terhubung
 
-- Pastikan backend sudah berjalan.
-- Buka `http://10.0.2.2:8080/api/auth/login` di Chrome emulator. Jika muncul teks "Method tidak didukung", backend bisa dijangkau.
-- Pastikan `targetSdk = 36` di `app/build.gradle.kts`. Dengan nilai 37, Android 17 memblokir koneksi aplikasi ke backend di laptop.
-- Emulator lambat atau macet: buka Device Manager, pilih **Cold Boot Now**.
+- Pastikan log backend sudah menampilkan `Started CampHubApiApplicationKt`.
+- Buka `http://10.0.2.2:8080/api/auth/login` di browser pada emulator. Jika muncul teks "Method tidak didukung", backend bisa dijangkau.
+- `targetSdk` harus 36. Dengan nilai 37, Android 17 memblokir koneksi aplikasi ke backend di laptop.
+- Emulator lambat atau macet: Device Manager → **Cold Boot Now**.
