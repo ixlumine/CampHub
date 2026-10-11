@@ -5,6 +5,7 @@ Aplikasi Android direktori bootcamp teknologi.
 - **Teknologi:** Jetpack Compose, Material 3, MVVM, Retrofit
 - **Versi Android:** minimal Android 9 (API 28)
 - **Backend:** repository [CampHubAPI](https://github.com/ixlumine/CampHubAPI)
+- **Dokumentasi:** [Arsitektur](docs/ARCHITECTURE.md)
 
 ## Struktur
 
@@ -35,7 +36,7 @@ app/src/main/java/com/camphub/app/
   - Detail program: harga, durasi, silabus, dan keterangan pendaftaran dibuka atau ditutup.
 - **Forum**: pertanyaan dan komentar.
 
-Tombol tambah, ubah, dan hapus tampil sesuai role dan pemilik data.
+Tombol tambah, ubah, dan hapus tampil sesuai role dan akun yang membuat data.
 
 ## Prasyarat
 
